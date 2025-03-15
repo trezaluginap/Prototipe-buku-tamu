@@ -1,13 +1,44 @@
 import React, { useState } from "react";
-import "../Styles.css"; // Make sure this is updated with our new CSS
+import "../Styles.css";
 
 const FormTamu = () => {
   const [keperluan, setKeperluan] = useState("");
   const [jenisKegiatan, setJenisKegiatan] = useState("");
+  const [formData, setFormData] = useState({});
 
-  const handleSubmit = (e) => {
-    if (!window.confirm("Apakah Anda yakin ingin mengirim formulir ini?")) {
-      e.preventDefault();
+  const handleChange = (e) => {
+    const { name, value, files } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: files ? files[0].name : value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!window.confirm("Apakah Anda yakin ingin mengirim formulir ini?"))
+      return;
+
+    try {
+      const response = await fetch(
+        "https://67d524cbd2c7857431ef80e1.mockapi.io/Guest",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+
+      if (response.ok) {
+        alert("Data berhasil dikirim!");
+      } else {
+        alert("Gagal mengirim data.");
+      }
+    } catch (error) {
+      console.error("Terjadi kesalahan:", error);
+      alert("Terjadi kesalahan saat mengirim data.");
     }
   };
 
@@ -18,17 +49,12 @@ const FormTamu = () => {
 
         <div className="form-group">
           <label>Nama Lengkap:</label>
-          <input
-            type="text"
-            name="nama"
-            required
-            placeholder="Masukkan nama lengkap"
-          />
+          <input type="text" name="nama" required onChange={handleChange} />
         </div>
 
         <div className="form-group">
           <label>Jenis Kelamin:</label>
-          <select name="jenis_kelamin">
+          <select name="jenis_kelamin" onChange={handleChange}>
             <option value="">Pilih jenis kelamin</option>
             <option value="L">Laki-laki</option>
             <option value="P">Perempuan</option>
@@ -37,37 +63,22 @@ const FormTamu = () => {
 
         <div className="form-group">
           <label>Email:</label>
-          <input type="email" name="email" placeholder="Masukkan email" />
+          <input type="email" name="email" onChange={handleChange} />
         </div>
 
         <div className="form-group">
           <label>No HP:</label>
-          <input
-            type="text"
-            name="no_hp"
-            required
-            placeholder="Masukkan nomor HP"
-            pattern="\d+"
-            title="Hanya angka yang diperbolehkan"
-          />
+          <input type="text" name="no_hp" required onChange={handleChange} />
         </div>
 
         <div className="form-group">
           <label>Pekerjaan:</label>
-          <input
-            type="text"
-            name="pekerjaan"
-            placeholder="Masukkan pekerjaan"
-          />
+          <input type="text" name="pekerjaan" onChange={handleChange} />
         </div>
 
         <div className="form-group">
           <label>Alamat:</label>
-          <textarea
-            name="alamat"
-            required
-            placeholder="Masukkan alamat"
-          ></textarea>
+          <textarea name="alamat" required onChange={handleChange}></textarea>
         </div>
 
         <div className="form-group">
@@ -75,7 +86,10 @@ const FormTamu = () => {
           <select
             name="keperluan"
             value={keperluan}
-            onChange={(e) => setKeperluan(e.target.value)}
+            onChange={(e) => {
+              setKeperluan(e.target.value);
+              handleChange(e);
+            }}
             required
           >
             <option value="">Pilih keperluan</option>
@@ -87,13 +101,16 @@ const FormTamu = () => {
 
         {/* Subform Mitra Statistik */}
         {keperluan === "mitra_statistik" && (
-          <div className="subform">
+          <>
             <div className="form-group">
               <label>Jenis Kegiatan:</label>
               <select
                 name="jenis_kegiatan"
                 value={jenisKegiatan}
-                onChange={(e) => setJenisKegiatan(e.target.value)}
+                onChange={(e) => {
+                  setJenisKegiatan(e.target.value);
+                  handleChange(e);
+                }}
               >
                 <option value="">Pilih jenis kegiatan</option>
                 <option value="konsul_teknis">Konsul Teknis</option>
@@ -104,75 +121,63 @@ const FormTamu = () => {
               </select>
             </div>
 
-            {/* Subform Konsul Teknis */}
             {jenisKegiatan === "konsul_teknis" && (
-              <div className="subform">
-                <div className="form-group">
-                  <label>Seksi:</label>
-                  <select name="seksi">
-                    <option value="">Pilih Seksi</option>
-                    <option value="sosial">Sosial</option>
-                    <option value="distribusi">Distribusi</option>
-                    <option value="produksi">Produksi</option>
-                    <option value="nwas">NWAS</option>
-                    <option value="ipds">IPDS</option>
-                  </select>
-                </div>
+              <div className="form-group">
+                <label>Seksi:</label>
+                <select name="seksi" onChange={handleChange}>
+                  <option value="">Pilih Seksi</option>
+                  <option value="sosial">Sosial</option>
+                  <option value="distribusi">Distribusi</option>
+                  <option value="produksi">Produksi</option>
+                  <option value="nwas">NWAS</option>
+                  <option value="ipds">IPDS</option>
+                </select>
               </div>
             )}
 
-            {/* Form Dokumen */}
             {(jenisKegiatan === "ambil_dokumen" ||
               jenisKegiatan === "serah_dokumen") && (
-              <div className="dokumen-form">
+              <>
                 <div className="form-group">
-                  <label>Siapa yang Mengirimkan:</label>
-                  <input
-                    type="text"
-                    name="pengirim"
-                    placeholder="Nama pengirim"
-                  />
+                  <label>Pengirim:</label>
+                  <input type="text" name="pengirim" onChange={handleChange} />
                 </div>
-
                 <div className="form-group">
-                  <label>Siapa Penerimanya:</label>
-                  <input
-                    type="text"
-                    name="penerima"
-                    placeholder="Nama penerima"
-                  />
+                  <label>Penerima:</label>
+                  <input type="text" name="penerima" onChange={handleChange} />
                 </div>
-
                 <div className="form-group">
                   <label>Jenis Dokumen:</label>
                   <input
                     type="text"
                     name="jenis_dokumen"
-                    placeholder="Jenis dokumen"
+                    onChange={handleChange}
                   />
                 </div>
-
                 <div className="form-group">
-                  <label>Banyaknya Dokumen:</label>
+                  <label>Jumlah Dokumen:</label>
                   <input
                     type="number"
                     name="jumlah_dokumen"
-                    placeholder="Jumlah dokumen"
+                    onChange={handleChange}
                   />
                 </div>
-
                 <div className="form-group">
                   <label>Foto Dokumen:</label>
-                  <input type="file" name="foto_dokumen" />
+                  <input
+                    type="file"
+                    name="foto_dokumen"
+                    onChange={handleChange}
+                  />
                 </div>
-              </div>
+              </>
             )}
-          </div>
+          </>
         )}
 
         <div className="form-group">
-          <label>Siapa yang Dituju:</label>
-          <select name="dituju" required>
+          <label>Dituju:</label>
+          <select name="dituju" required onChange={handleChange}>
             <option value="">Pilih Staff</option>
             <option value="budi">Budi Santoso</option>
             <option value="siti">Siti Rahmawati</option>
@@ -183,7 +188,12 @@ const FormTamu = () => {
 
         <div className="form-group">
           <label>Tanggal Kedatangan:</label>
-          <input type="date" name="tanggal_kedatangan" required />
+          <input
+            type="date"
+            name="tanggal_kedatangan"
+            required
+            onChange={handleChange}
+          />
         </div>
 
         <button type="submit">Submit</button>
