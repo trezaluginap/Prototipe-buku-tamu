@@ -2,7 +2,9 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import "../Styles.css";
 import LoginPict from "../assets/LoginPict.jpg";
-import BPSLogo from "../assets/BPS.png"; // Assuming you have this from the previous form
+import BPSLogo from "../assets/BPS.png"; 
+import Faisal from "../assets/faisal.jpg"
+import download from "../assets/download.jpeg"
 
 const Login = () => {
   const navigate = useNavigate();
@@ -12,7 +14,7 @@ const Login = () => {
       {/* Left: Illustration */}
       <div className="login-image">
         <div className="login-image-overlay">
-          <img src={LoginPict} alt="Login Illustration" />
+          <img src={download} alt="Login Illustration" />
         </div>
       </div>
 
