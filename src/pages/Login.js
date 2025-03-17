@@ -3,8 +3,6 @@ import { useNavigate } from "react-router-dom";
 import "../Styles.css";
 import LoginPict from "../assets/LoginPict.jpg";
 import BPSLogo from "../assets/BPS.png"; 
-import Faisal from "../assets/faisal.jpg"
-import download from "../assets/download.jpeg"
 
 const Login = () => {
   const navigate = useNavigate();
@@ -14,7 +12,7 @@ const Login = () => {
       {/* Left: Illustration */}
       <div className="login-image">
         <div className="login-image-overlay">
-          <img src={download} alt="Login Illustration" />
+          <img src={LoginPict} alt="Login Illustration" />
         </div>
       </div>
 
